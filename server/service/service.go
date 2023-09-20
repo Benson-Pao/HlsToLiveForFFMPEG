@@ -86,7 +86,7 @@ func (c *Conns) Add(item APIData) {
 	c.Lock()
 	defer c.Unlock()
 	conn := c.Get(item.Key)
-	cmd := exec.Command("./ffmpeg", "-readrate", "2", "-i", item.Src, "-codec", "copy", "-f", "flv", "-flvflags", "no_duration_filesize", item.Dst)
+	cmd := exec.Command("./ffmpeg", "-i", item.Src, "-vcodec", "copy", "-acodec", "copy", "-f", "flv", "-flvflags", "no_duration_filesize", item.Dst)
 	if conn == nil {
 		conn = &Conn{
 			Key:    item.Key,
@@ -156,7 +156,9 @@ func (c *Conn) SetStatus(phase int) {
 func (c *Conn) Run() {
 	go func() {
 
+		// ./ffmpeg -i https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8 -vcodec copy -acodec copy -f flv -flvflags no_duration_filesize rtmp://domain/hls/abc
 		// ./ffmpeg -readrate 2 -i https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8 -codec copy -f flv -flvflags no_duration_filesize rtmp://domain/hls/abc
+		// -readrate 2 別放較好 有的版本會不相容
 		// test source https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 		//cmd := exec.Command("./ffmpeg", "-readrate", "2", "-i", c.Src, "-codec", "copy", "-f", "flv", "-flvflags", "no_duration_filesize", c.Dst)
 		//不抛出duration_filesize警告
