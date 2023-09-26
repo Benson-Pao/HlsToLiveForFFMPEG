@@ -13,14 +13,16 @@ import (
 
 func init() {
 	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate)
+	flag.StringVar(&apiport, "p", "8000", "api server listen port")
 	flag.Parse()
 }
 
 var (
-	apiport = flag.String("p", "8000", "api server listen port")
+	apiport string
 )
 
 func main() {
+
 	ctx, cancel := context.WithCancel(context.Background())
 	signalCh := make(chan os.Signal, 1)
 	stop := make(chan bool, 1)
@@ -42,7 +44,7 @@ func main() {
 		}
 	}()
 
-	apierr := api.NewServer(ctx, ":"+*apiport)
+	apierr := api.NewServer(ctx, ":"+apiport)
 	if apierr != nil {
 		log.Println("[error]", "API Server :", apierr)
 		return
